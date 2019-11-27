@@ -252,7 +252,8 @@ LTE_FDD_ENB_ERROR_ENUM LTE_fdd_enb_radio_usrp_b2x0::setup(uint32       idx,
             usrp->set_rx_freq((double)liblte_interface_ul_earfcn_to_frequency(ul_earfcn));
             usrp->set_tx_gain(tx_gain);
             usrp->set_rx_gain(rx_gain);
-
+	    usrp->set_rx_antenna("LNAH");
+	    usrp->set_tx_antenna("BAND2");
             // Setup the TX and RX streams
             tx_stream  = usrp->get_tx_stream(stream_args);
             rx_stream  = usrp->get_rx_stream(stream_args);
