@@ -229,7 +229,7 @@ LTE_FDD_ENB_ERROR_ENUM LTE_fdd_enb_radio_usrp_b2x0::setup(uint32       idx,
     try
     {
         // Setup the USRP
-        if(devs[idx-1]["type"] == "x300")
+        if(devs[idx-1]["type"] == "soapy")
         {
             devs[idx-1]["master_clock_rate"] = "184320000";
             master_clock_set                 = true;

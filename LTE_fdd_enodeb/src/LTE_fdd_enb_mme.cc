@@ -204,7 +204,7 @@ void LTE_fdd_enb_mme::handle_nas_msg(LTE_FDD_ENB_MME_NAS_MSG_READY_MSG_STRUCT *n
         case LIBLTE_MME_MSG_TYPE_ATTACH_REQUEST:
             parse_attach_request(msg, &nas_msg->user, &nas_msg->rb);
             break;
-case LTE_FDD_ENB_MME_PROC_TAU_REQUEST:
+        case LTE_FDD_ENB_MME_PROC_TAU_REQUEST:
             send_tracking_area_update_request(msg, &nas_msg->user, &nas_msg->rb);
             break;
 
@@ -594,7 +594,7 @@ void LTE_fdd_enb_mme::parse_attach_request(LIBLTE_BYTE_MSG_STRUCT  *msg,
                 {
                     (*rb)->set_mme_state(LTE_FDD_ENB_MME_STATE_AUTHENTICATE);
                 }else{
-                    (*user)->set_emm_cause(LIBLTE_MME_EMM_CAUSE_UE_SECURITY_CAPABILITIES_MISMATCH);
+                    (*user)->set_emm_cause(LIBLTE_MME_EMM_CAUSE_UE_IDENTITY_CANNOT_BE_DERIVED_BY_THE_NETWORK);
                     (*rb)->set_mme_state(LTE_FDD_ENB_MME_STATE_REJECT);
                 }
             }else{
@@ -622,7 +622,7 @@ void LTE_fdd_enb_mme::parse_attach_request(LIBLTE_BYTE_MSG_STRUCT  *msg,
                 (*rb)->set_mme_state(LTE_FDD_ENB_MME_STATE_AUTHENTICATE);
                 (*user)->set_id(hss->get_user_id_from_imsi(imsi_num));
             }else{
-                (*user)->set_emm_cause(LIBLTE_MME_EMM_CAUSE_UE_SECURITY_CAPABILITIES_MISMATCH);
+                (*user)->set_emm_cause(LIBLTE_MME_EMM_CAUSE_UE_IDENTITY_CANNOT_BE_DERIVED_BY_THE_NETWORK);
                 (*rb)->set_mme_state(LTE_FDD_ENB_MME_STATE_REJECT);
             }
         }else{
@@ -650,7 +650,7 @@ void LTE_fdd_enb_mme::parse_attach_request(LIBLTE_BYTE_MSG_STRUCT  *msg,
                 (*rb)->set_mme_state(LTE_FDD_ENB_MME_STATE_AUTHENTICATE);
                 (*user)->set_id(hss->get_user_id_from_imei(imei_num));
             }else{
-                (*user)->set_emm_cause(LIBLTE_MME_EMM_CAUSE_UE_SECURITY_CAPABILITIES_MISMATCH);
+                (*user)->set_emm_cause(LIBLTE_MME_EMM_CAUSE_UE_IDENTITY_CANNOT_BE_DERIVED_BY_THE_NETWORK);
                 (*rb)->set_mme_state(LTE_FDD_ENB_MME_STATE_REJECT);
             }
         }else{
@@ -850,7 +850,7 @@ void LTE_fdd_enb_mme::parse_identity_response(LIBLTE_BYTE_MSG_STRUCT *msg,
                 rb->set_mme_state(LTE_FDD_ENB_MME_STATE_AUTHENTICATE);
                 user->set_id(hss->get_user_id_from_imsi(imsi_num));
             }else{
-                user->set_emm_cause(LIBLTE_MME_EMM_CAUSE_UE_SECURITY_CAPABILITIES_MISMATCH);
+                user->set_emm_cause(LIBLTE_MME_EMM_CAUSE_UE_IDENTITY_CANNOT_BE_DERIVED_BY_THE_NETWORK);
                 rb->set_mme_state(LTE_FDD_ENB_MME_STATE_REJECT);
             }
         }else{
@@ -878,7 +878,7 @@ void LTE_fdd_enb_mme::parse_identity_response(LIBLTE_BYTE_MSG_STRUCT *msg,
                 rb->set_mme_state(LTE_FDD_ENB_MME_STATE_AUTHENTICATE);
                 user->set_id(hss->get_user_id_from_imei(imei_num));
             }else{
-                user->set_emm_cause(LIBLTE_MME_EMM_CAUSE_UE_SECURITY_CAPABILITIES_MISMATCH);
+                user->set_emm_cause(LIBLTE_MME_EMM_CAUSE_UE_IDENTITY_CANNOT_BE_DERIVED_BY_THE_NETWORK);
                 rb->set_mme_state(LTE_FDD_ENB_MME_STATE_REJECT);
             }
         }else{
@@ -1210,7 +1210,7 @@ void LTE_fdd_enb_mme::attach_sm(LTE_fdd_enb_user *user,
         send_attach_reject(user, rb);
         break;
  case LTE_FDD_ENB_MME_STATE_TAU_REJECT:
-        send_attach_reject(user, rb);
+        send_tracking_area_update_reject(user, rb);
 break;
     case LTE_FDD_ENB_MME_STATE_AUTHENTICATE:
         send_authentication_request(user, rb);
@@ -1424,7 +1424,6 @@ void LTE_fdd_enb_mme::send_tracking_area_update_reject(LTE_fdd_enb_user *user,
     LTE_FDD_ENB_RRC_NAS_MSG_READY_MSG_STRUCT nas_msg_ready;
     LIBLTE_MME_TRACKING_AREA_UPDATE_REJECT_MSG_STRUCT      ta_update_rej;
     LIBLTE_BYTE_MSG_STRUCT                   msg;
-
      ta_update_rej.emm_cause = user->get_emm_cause();
      ta_update_rej.t3446_present = false;
      liblte_mme_pack_tracking_area_update_reject_msg(
@@ -1469,7 +1468,7 @@ void LTE_fdd_enb_mme::send_attach_reject(LTE_fdd_enb_user *user,
         imsi_num = user->get_temp_id();
     }
 
-    attach_rej.emm_cause           = user->get_emm_cause();
+    attach_rej.emm_cause           = 2;
     attach_rej.esm_msg_present     = false;
     attach_rej.t3446_value_present = false;
     liblte_mme_pack_attach_reject_msg(&attach_rej, &msg);
