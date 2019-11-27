@@ -1,4 +1,4 @@
-// Make __FILE__ omit the path
+#line 2 "LTE_fdd_enb_mme.cc" // Make __FILE__ omit the path
 /*******************************************************************************
 
     Copyright 2013-2017 Ben Wojtowicz
@@ -94,7 +94,7 @@
 /********************************/
 LTE_fdd_enb_mme::LTE_fdd_enb_mme()
 {
-   sem_init(&start_sem, 0, 1);
+    sem_init(&start_sem, 0, 1);
     sem_init(&sys_info_sem, 0, 1);
     started = false;
 }
@@ -204,10 +204,6 @@ void LTE_fdd_enb_mme::handle_nas_msg(LTE_FDD_ENB_MME_NAS_MSG_READY_MSG_STRUCT *n
         case LIBLTE_MME_MSG_TYPE_ATTACH_REQUEST:
             parse_attach_request(msg, &nas_msg->user, &nas_msg->rb);
             break;
-case LTE_FDD_ENB_MME_PROC_TAU_REQUEST:
-            send_tracking_area_update_request(msg, &nas_msg->user, &nas_msg->rb);
-            break;
-
         case LIBLTE_MME_MSG_TYPE_AUTHENTICATION_FAILURE:
             parse_authentication_failure(msg, nas_msg->user, nas_msg->rb);
             break;
@@ -659,16 +655,6 @@ void LTE_fdd_enb_mme::parse_attach_request(LIBLTE_BYTE_MSG_STRUCT  *msg,
         }
     }
 }
-void LTE_fdd_enb_mme::send_tracking_area_update_request(LIBLTE_BYTE_MSG_STRUCT  *msg,
-                                           LTE_fdd_enb_user       **user,
-                                           LTE_fdd_enb_rb         **rb)
-{
-    // Set the procedure
-
-(*rb) -> set_mme_procedure(LTE_FDD_ENB_MME_PROC_TAU_REQUEST);
-(*rb) -> set_mme_state(LTE_FDD_ENB_MME_STATE_TAU_REJECT);}
-
-
 void LTE_fdd_enb_mme::parse_authentication_failure(LIBLTE_BYTE_MSG_STRUCT *msg,
                                                    LTE_fdd_enb_user       *user,
                                                    LTE_fdd_enb_rb         *rb)
@@ -1205,13 +1191,16 @@ void LTE_fdd_enb_mme::attach_sm(LTE_fdd_enb_user *user,
     case LTE_FDD_ENB_MME_STATE_ID_REQUEST_IMSI:
         send_identity_request(user, rb, LIBLTE_MME_ID_TYPE_2_IMSI);
         break;
+    case LTE_FDD_ENB_MME_STATE_TAU_REQUEST:
+        send_tracking_area_update_request(user, rb);
+        break;
+    case LTE_FDD_ENB_MME_STATE_TAU_REJECT:
+        send_tracking_area_update_reject(user, rb);
+	break;
     case LTE_FDD_ENB_MME_STATE_REJECT:
         user->prepare_for_deletion();
         send_attach_reject(user, rb);
         break;
- case LTE_FDD_ENB_MME_STATE_TAU_REJECT:
-        send_attach_reject(user, rb);
-break;
     case LTE_FDD_ENB_MME_STATE_AUTHENTICATE:
         send_authentication_request(user, rb);
         break;
@@ -1414,6 +1403,16 @@ void LTE_fdd_enb_mme::send_attach_accept(LTE_fdd_enb_user *user,
                       (LTE_FDD_ENB_MESSAGE_UNION *)&cmd_ready,
                       sizeof(LTE_FDD_ENB_RRC_CMD_READY_MSG_STRUCT));
 }
+void LTE_fdd_enb_mme::send_tracking_area_update_request(LTE_fdd_enb_user *user, LTE_fdd_enb_rb *rb)
+{// Set the procedure
+    LTE_FDD_ENB_RRC_NAS_MSG_READY_MSG_STRUCT nas_msg_ready;
+    LIBLTE_BYTE_MSG_STRUCT                   msg;
+
+    rb->queue_rrc_nas_msg(&msg);
+    (*rb)->set_mme_procedure(LTE_FDD_ENB_MME_PROC_ATTACH);
+(*rb) -> set_mme_procedure(LTE_FDD_ENB_MME_STATE_TAU_REQUEST);
+(*rb) -> set_mme_state(LTE_FDD_ENB_MME_STATE_TAU_REJECT);}
+
 
 
 

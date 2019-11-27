@@ -204,10 +204,6 @@ void LTE_fdd_enb_mme::handle_nas_msg(LTE_FDD_ENB_MME_NAS_MSG_READY_MSG_STRUCT *n
         case LIBLTE_MME_MSG_TYPE_ATTACH_REQUEST:
             parse_attach_request(msg, &nas_msg->user, &nas_msg->rb);
             break;
-case LTE_FDD_ENB_MME_PROC_TAU_REQUEST:
-            send_tracking_area_update_request(msg, &nas_msg->user, &nas_msg->rb);
-            break;
-
         case LIBLTE_MME_MSG_TYPE_AUTHENTICATION_FAILURE:
             parse_authentication_failure(msg, nas_msg->user, nas_msg->rb);
             break;
@@ -659,16 +655,6 @@ void LTE_fdd_enb_mme::parse_attach_request(LIBLTE_BYTE_MSG_STRUCT  *msg,
         }
     }
 }
-void LTE_fdd_enb_mme::send_tracking_area_update_request(LIBLTE_BYTE_MSG_STRUCT  *msg,
-                                           LTE_fdd_enb_user       **user,
-                                           LTE_fdd_enb_rb         **rb)
-{
-    // Set the procedure
-
-(*rb) -> set_mme_procedure(LTE_FDD_ENB_MME_PROC_TAU_REQUEST);
-(*rb) -> set_mme_state(LTE_FDD_ENB_MME_STATE_TAU_REJECT);}
-
-
 void LTE_fdd_enb_mme::parse_authentication_failure(LIBLTE_BYTE_MSG_STRUCT *msg,
                                                    LTE_fdd_enb_user       *user,
                                                    LTE_fdd_enb_rb         *rb)
@@ -1205,13 +1191,16 @@ void LTE_fdd_enb_mme::attach_sm(LTE_fdd_enb_user *user,
     case LTE_FDD_ENB_MME_STATE_ID_REQUEST_IMSI:
         send_identity_request(user, rb, LIBLTE_MME_ID_TYPE_2_IMSI);
         break;
+    case LTE_FDD_ENB_MME_STATE_TAU_REQUEST:
+        send_tracking_area_update_request(msg, user, rb);
+        break;
+    case LTE_FDD_ENB_MME_STATE_TAU_REJECT:
+        send_tracking_area_update_reject(user, rb);
+	break;
     case LTE_FDD_ENB_MME_STATE_REJECT:
         user->prepare_for_deletion();
         send_attach_reject(user, rb);
         break;
- case LTE_FDD_ENB_MME_STATE_TAU_REJECT:
-        send_attach_reject(user, rb);
-break;
     case LTE_FDD_ENB_MME_STATE_AUTHENTICATE:
         send_authentication_request(user, rb);
         break;
@@ -1414,6 +1403,54 @@ void LTE_fdd_enb_mme::send_attach_accept(LTE_fdd_enb_user *user,
                       (LTE_FDD_ENB_MESSAGE_UNION *)&cmd_ready,
                       sizeof(LTE_FDD_ENB_RRC_CMD_READY_MSG_STRUCT));
 }
+void LTE_fdd_enb_mme::send_tracking_area_update_request(LIBLTE_BYTE_MSG_STRUCT  *msg,
+                                           LTE_fdd_enb_user       **user,
+                                           LTE_fdd_enb_rb         **rb)
+{
+    LTE_fdd_enb_hss                      *hss       = LTE_fdd_enb_hss::get_instance();
+    LTE_fdd_enb_user_mgr                 *user_mgr  = LTE_fdd_enb_user_mgr::get_instance();
+    LTE_fdd_enb_user                     *act_user;
+    LIBLTE_MME_ATTACH_REQUEST_MSG_STRUCT  attach_req;
+    uint64                                imsi_num = 0;
+    uint64                                imei_num = 0;
+    uint32                                i;
+    uint8                                 pd;
+    uint8                                 msg_type;
+
+    interface->send_debug_msg(LTE_FDD_ENB_DEBUG_TYPE_INFO,
+                              LTE_FDD_ENB_DEBUG_LEVEL_MME,
+                              __FILE__,
+                              __LINE__,
+                              "Received Attach Request for RNTI=%u and RB=%s",
+                              (*user)->get_c_rnti(),
+                              LTE_fdd_enb_rb_text[(*rb)->get_rb_id()]);
+
+    // Unpack the message
+    liblte_mme_unpack_attach_request_msg(msg, &attach_req);
+
+    // Parse the ESM message
+    liblte_mme_parse_msg_header(&attach_req.esm_msg, &pd, &msg_type);
+    switch(msg_type)
+    {
+    case LIBLTE_MME_MSG_TYPE_PDN_CONNECTIVITY_REQUEST:
+        parse_pdn_connectivity_request(&attach_req.esm_msg, (*user), (*rb));
+        break;
+    default:
+        interface->send_debug_msg(LTE_FDD_ENB_DEBUG_TYPE_ERROR,
+                                  LTE_FDD_ENB_DEBUG_LEVEL_MME,
+                                  __FILE__,
+                                  __LINE__,
+                                  "Not handling NAS message with MSG_TYPE=%02X",
+                                  msg_type);
+        break;
+    }
+
+    // Set the procedure
+    (*rb)->set_mme_procedure(LTE_FDD_ENB_MME_PROC_ATTACH);
+
+(*rb) -> set_mme_procedure(LTE_FDD_ENB_MME_STATE_TAU_REQUEST);
+(*rb) -> set_mme_state(LTE_FDD_ENB_MME_STATE_TAU_REJECT);}
+
 
 
 
