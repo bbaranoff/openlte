@@ -511,7 +511,7 @@ void LTE_fdd_enb_mme::parse_attach_request(LIBLTE_BYTE_MSG_STRUCT  *msg,
                               "Received Attach Request for RNTI=%u and RB=%s",
                               (*user)->get_c_rnti(),
                               LTE_fdd_enb_rb_text[(*rb)->get_rb_id()]);
-
+       printf("cool");
     // Unpack the message
     liblte_mme_unpack_attach_request_msg(msg, &attach_req);
 
@@ -594,7 +594,7 @@ void LTE_fdd_enb_mme::parse_attach_request(LIBLTE_BYTE_MSG_STRUCT  *msg,
                 {
                     (*rb)->set_mme_state(LTE_FDD_ENB_MME_STATE_AUTHENTICATE);
                 }else{
-                    (*user)->set_emm_cause(LIBLTE_MME_EMM_CAUSE_UE_IDENTITY_CANNOT_BE_DERIVED_BY_THE_NETWORK);
+                    (*user)->set_emm_cause(LIBLTE_MME_EMM_CAUSE_UE_SECURITY_CAPABILITIES_MISMATCH);
                     (*rb)->set_mme_state(LTE_FDD_ENB_MME_STATE_REJECT);
                 }
             }else{
@@ -622,7 +622,7 @@ void LTE_fdd_enb_mme::parse_attach_request(LIBLTE_BYTE_MSG_STRUCT  *msg,
                 (*rb)->set_mme_state(LTE_FDD_ENB_MME_STATE_AUTHENTICATE);
                 (*user)->set_id(hss->get_user_id_from_imsi(imsi_num));
             }else{
-                (*user)->set_emm_cause(LIBLTE_MME_EMM_CAUSE_UE_IDENTITY_CANNOT_BE_DERIVED_BY_THE_NETWORK);
+                (*user)->set_emm_cause(LIBLTE_MME_EMM_CAUSE_UE_SECURITY_CAPABILITIES_MISMATCH);
                 (*rb)->set_mme_state(LTE_FDD_ENB_MME_STATE_REJECT);
             }
         }else{
@@ -650,7 +650,7 @@ void LTE_fdd_enb_mme::parse_attach_request(LIBLTE_BYTE_MSG_STRUCT  *msg,
                 (*rb)->set_mme_state(LTE_FDD_ENB_MME_STATE_AUTHENTICATE);
                 (*user)->set_id(hss->get_user_id_from_imei(imei_num));
             }else{
-                (*user)->set_emm_cause(LIBLTE_MME_EMM_CAUSE_UE_IDENTITY_CANNOT_BE_DERIVED_BY_THE_NETWORK);
+                (*user)->set_emm_cause(LIBLTE_MME_EMM_CAUSE_UE_SECURITY_CAPABILITIES_MISMATCH);
                 (*rb)->set_mme_state(LTE_FDD_ENB_MME_STATE_REJECT);
             }
         }else{
@@ -985,7 +985,6 @@ void LTE_fdd_enb_mme::parse_service_request(LIBLTE_BYTE_MSG_STRUCT *msg,
     LTE_FDD_ENB_RRC_CMD_READY_MSG_STRUCT      cmd_ready;
     LIBLTE_MME_SERVICE_REQUEST_MSG_STRUCT     service_req;
     uint32                                    i;
-
     interface->send_debug_msg(LTE_FDD_ENB_DEBUG_TYPE_INFO,
                               LTE_FDD_ENB_DEBUG_LEVEL_MME,
                               __FILE__,
@@ -1433,7 +1432,6 @@ void LTE_fdd_enb_mme::send_tracking_area_update_reject(LTE_fdd_enb_user *user,
      user->get_auth_vec()->nas_count_dl,
      LIBLTE_SECURITY_DIRECTION_DOWNLINK,
      &msg);
-
     // Queue the NAS message for RRC
     rb->queue_rrc_nas_msg(&msg);
 
@@ -1446,6 +1444,14 @@ void LTE_fdd_enb_mme::send_tracking_area_update_reject(LTE_fdd_enb_user *user,
                       sizeof(LTE_FDD_ENB_RRC_NAS_MSG_READY_MSG_STRUCT));
 
     send_rrc_command(user, rb, LTE_FDD_ENB_RRC_CMD_RELEASE);
+// Unpack the message
+    liblte_mme_unpack_tracking_area_update_reject_msg(&msg, &ta_update_rej);
+
+    interface->send_ctrl_info_msg("user fully attached imsi=%s imei=%s",
+                                  user->get_imsi_str().c_str(),
+                                  user->get_imei_str().c_str());
+
+    rb->set_mme_state(LTE_FDD_ENB_MME_STATE_ATTACHED);
 }
 
 
