@@ -1,0 +1,11 @@
+--- a/LTE_fdd_enodeb/src/LTE_fdd_enb_radio.cc2	2019-11-29 16:49:37.707620083 +0100
++++ b/LTE_fdd_enodeb/src/LTE_fdd_enb_radio.cc	2019-11-29 16:42:13.751607399 +0100
+@@ -229,7 +229,7 @@
+     try
+     {
+         // Setup the USRP
+-        if(devs[idx-1]["type"] == "uhd")
++        if(devs[idx-1]["type"] == "soapy")
+         {
+             devs[idx-1]["master_clock_rate"] = "184320000";
+             master_clock_set                 = true;

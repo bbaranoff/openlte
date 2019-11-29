@@ -44,14 +44,13 @@ To install the C++ and python code use the following:
   $ sudo make install
 
 All testing was performed against the following configuration:
-- Intel Core i5-2557M
-- Ubuntu 12.04
-- GNU Radio 3.7.2
-- GrOsmoSDR 0.1.1
-- rtl-sdr 0.5
-- UHD 3.6.0-1
-- HackRF 0.2
-- bladeRF 0.9.0
+- Intel Core i5 8th gen
+- Kali 2019.4
+- GNU Radio maint-3.7
+- GrOsmoSDR v0.1.4
+- UHD_3.15.0.HEAD-0-gdbaf4132
+- libbladeRF_v2.2.1
+
 
 ##################
 #  FILE SCANNER  #

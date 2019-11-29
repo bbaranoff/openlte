@@ -1,0 +1,11 @@
+--- a/LTE_fdd_enodeb/src/LTE_fdd_enb_radio.cc2	2019-11-29 16:51:43.643623681 +0100
++++ b/LTE_fdd_enodeb/src/LTE_fdd_enb_radio.cc	2019-11-29 16:42:13.751607399 +0100
+@@ -252,8 +252,6 @@
+             usrp->set_rx_freq((double)liblte_interface_ul_earfcn_to_frequency(ul_earfcn));
+             usrp->set_tx_gain(tx_gain);
+             usrp->set_rx_gain(rx_gain);
+-            usrp->set_tx_antenna("BAND2");
+-            usrp->set_rx_antenna("LNAH");
+             // Setup the TX and RX streams
+             tx_stream  = usrp->get_tx_stream(stream_args);
+             rx_stream  = usrp->get_rx_stream(stream_args);
