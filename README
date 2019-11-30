@@ -48,7 +48,7 @@ All testing was performed against the following configuration:
 - Kali 2019.4
 - GNU Radio maint-3.7
 - GrOsmoSDR v0.1.4
-- UHD_3.15.0.HEAD-0-gdbaf4132
+- UHD 3.15.0.0-124-geb448043
 - libbladeRF_v2.2.1
 
 
