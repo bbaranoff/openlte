@@ -4,8 +4,8 @@
      try
      {
          // Setup the USRP
--        if(devs[idx-1]["type"] == "uhd")
-+        if(devs[idx-1]["type"] == "soapy")
+-        if(devs[idx-1]["type"] == "soapy")
++        if(devs[idx-1]["type"] == "uhd")
          {
              devs[idx-1]["master_clock_rate"] = "184320000";
              master_clock_set                 = true;
