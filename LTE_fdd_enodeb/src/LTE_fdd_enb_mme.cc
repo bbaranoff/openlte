@@ -511,7 +511,8 @@ void LTE_fdd_enb_mme::parse_attach_request(LIBLTE_BYTE_MSG_STRUCT  *msg,
                               "Received Attach Request for RNTI=%u and RB=%s",
                               (*user)->get_c_rnti(),
                               LTE_fdd_enb_rb_text[(*rb)->get_rb_id()]);
-       printf("cool");
+    printf("Received Attach Request for RNTI=%u and RB=%s");
+
     // Unpack the message
     liblte_mme_unpack_attach_request_msg(msg, &attach_req);
 
