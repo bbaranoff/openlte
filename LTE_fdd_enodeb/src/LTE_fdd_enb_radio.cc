@@ -1,4 +1,4 @@
-#line 2 "LTE_fdd_enb_radio.cc" // Make __FILE__ omit the path
+// Make __FILE__ omit the path
 /*******************************************************************************
 
     Copyright 2013-2017 Ben Wojtowicz
