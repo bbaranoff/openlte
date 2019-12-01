@@ -11707,9 +11707,9 @@ LIBLTE_ERROR_ENUM liblte_rrc_pack_rrc_connection_release_msg(LIBLTE_RRC_CONNECTI
 liblte_value_2_bits(con_release->release_cause, &msg_ptr, 2);
 // redirectedcarrierinfo
 // geran // choice
-liblte_value_2_bits(1, &msg_ptr,4);
+liblte_value_2_bits(1, &msg_ptr, 4);
 // arfcn no.
-liblte_value_2_bits(4, &msg_ptr, 7);
+liblte_value_2_bits(514, &msg_ptr, 10);
 // dcs1800
 liblte_value_2_bits(0, &msg_ptr, 1);
 // Choice of following ARFCN
@@ -11717,7 +11717,7 @@ liblte_value_2_bits(0, &msg_ptr, 2);
 // explicit list
 liblte_value_2_bits(1, &msg_ptr, 5);
 // arfcn no.
-liblte_value_2_bits(4, &msg_ptr, 7);
+liblte_value_2_bits(514, &msg_ptr, 10);
 // Note that total bits should be octet aligned,
 // if not, pad it with zeros.
         // Fill in the number of bits used
