@@ -37,7 +37,7 @@ git clone https://github.com/pothosware/SoapyBladeRF (only if you have a BladeRF
 git clone https://github.com/pothosware/SoapyUHD tested with checkout 7371e68
 git clone https://github.com/myriadrf/LimeSuite only if you have a LimeSDR) tested with checkout a5b3a10f
 git clone https://github.com/gnuradio/gnuradio tested with checkout 8e2808513
-git clone https://github.com/osmocmo/gr-osmosdr tested with checkout 4d83c60
+git clone https://github.com/osmocom/gr-osmosdr tested with checkout 4d83c60
 wget https://tls.mbed.org/download/polarssl-1.3.7-gpl.tgz && tar zxvf polarssl-1.3.7-gpl.tgz
 git clone https://github.com/bbaranoff/openlte tested with checkout 4bd673b
 
